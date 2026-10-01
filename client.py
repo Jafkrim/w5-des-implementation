@@ -11,8 +11,10 @@ def receive_messages(sock):
             if not encrypted_data:
                 break
             print(f"\n[Ciphertext In] {encrypted_data}")
+
+            cipher = des.DES_Algorithm(encrypted_data, SHARED_KEY, False)
+            decrypted = cipher.DES(viewSteps=False).strip(" ")
             
-            decrypted = des.decrypt(encrypted_data, SHARED_KEY)
             print(f"[Server] {decrypted}\n> ", end="")
         except:
             break
@@ -37,7 +39,12 @@ def main():
         msg = input("> ")
         if msg.lower() == 'exit':
             break
-        encrypted_msg = des.encrypt(msg, SHARED_KEY)
+        if not msg:
+            continue
+            
+        cipher = des.DES_Algorithm(msg, SHARED_KEY)
+        encrypted_msg = cipher.DES(viewSteps=False)
+        
         client.send(encrypted_msg.encode('utf-8'))
         
     client.close()

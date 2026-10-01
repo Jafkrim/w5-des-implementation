@@ -1,6 +1,6 @@
 import socket
 import threading
-import des # Imports your local des.py
+import des
 
 SHARED_KEY = "SECRET88" 
 
@@ -11,8 +11,10 @@ def receive_messages(conn):
             if not encrypted_data:
                 break
             print(f"\n[Ciphertext In] {encrypted_data}")
+
+            cipher = des.DES_Algorithm(encrypted_data, SHARED_KEY, False)
+            decrypted = cipher.DES(viewSteps=False).strip(" ")
             
-            decrypted = des.decrypt(encrypted_data, SHARED_KEY)
             print(f"[Client] {decrypted}\n> ", end="")
         except Exception as e:
             print(f"\nConnection closed: {e}")
@@ -38,7 +40,12 @@ def main():
         msg = input("> ")
         if msg.lower() == 'exit':
             break
-        encrypted_msg = des.encrypt(msg, SHARED_KEY)
+        if not msg:
+            continue
+            
+        cipher = des.DES_Algorithm(msg, SHARED_KEY)
+        encrypted_msg = cipher.DES(viewSteps=False)
+        
         conn.send(encrypted_msg.encode('utf-8'))
         
     conn.close()
