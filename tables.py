@@ -2,6 +2,7 @@
 The table below is used for permutation of
 the input key and compressing it to 56 bits
 '''
+# Drops the 8th parity bit of each byte, shrinking the 64-bit key to 56 bits.
 keyCompression64_56 = [56, 48, 40, 32, 24, 16, 8,
                        0, 57, 49, 41, 33, 25, 17,
                        9, 1, 58, 50, 42, 34, 26,
@@ -16,6 +17,7 @@ keyCompression64_56 = [56, 48, 40, 32, 24, 16, 8,
 The table below is used for permutation of
 the shifted key and compressing it to 48 bits
 '''
+# Compresses the 56-bit key down to 48 bits to create the round "Subkeys".
 keyCompression56_48 = [13, 16, 10, 23, 0, 4, 2, 27,
                        14, 5, 20, 9, 22, 18, 11, 3,
                        25, 7, 15, 6, 26, 19, 12, 1,
@@ -23,6 +25,7 @@ keyCompression56_48 = [13, 16, 10, 23, 0, 4, 2, 27,
                        50, 44, 32, 47, 43, 48, 38, 55,
                        33, 52, 45, 41, 49, 35, 28, 31]
 
+# Scrambles the starting plaintext bits before they enter the Feistel rounds.
 initialPermutation = [57, 49, 41, 33, 25, 17, 9, 1,
                       59, 51, 43, 35, 27, 19, 11, 3,
                       61, 53, 45, 37, 29, 21, 13, 5,
@@ -37,6 +40,7 @@ initialPermutation = [57, 49, 41, 33, 25, 17, 9, 1,
 The table below is used for expansion of right text
 from 32 bits to 48 bits for XOR with round key
 '''
+# Expands the 32-bit Right block into 48 bits so it can be XOR'd with the Subkey.
 textExpansion32_48 = [31, 0, 1, 2, 3, 4,
                       3, 4, 5, 6, 7, 8,
                       7, 8, 9, 10, 11, 12,
@@ -46,6 +50,7 @@ textExpansion32_48 = [31, 0, 1, 2, 3, 4,
                       23, 24, 25, 26, 27, 28,
                       27, 28, 29, 30, 31, 0]
 
+# Non-linear math. Irreversibly crushes the 48-bit XOR result back into 32 bits.
 subsitutionBox = [
                  [[14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7],
                   [0, 15, 7, 4, 14, 2, 13, 1, 10, 6, 12, 11, 9, 5, 3, 8],
@@ -96,11 +101,13 @@ subsitutionBox = [
                   ]
 ]
 
+# Scrambles the 32-bit S-Box output before it swaps with the Left block.
 keyShuffle = [15, 6, 19, 20, 28, 11, 27, 16,
               0, 14, 22, 25, 4, 17, 30, 9,
               1, 7, 23, 13, 31, 26, 2, 8,
               18, 12, 29, 5, 21, 10, 3, 24]
 
+# The exact reverse of IP. Applied at the very end to output the final Ciphertext.
 finalPermutation = [39, 7, 47, 15, 55, 23, 63, 31,
                     38, 6, 46, 14, 54, 22, 62, 30,
                     37, 5, 45, 13, 53, 21, 61, 29,

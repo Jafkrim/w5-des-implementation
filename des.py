@@ -88,6 +88,7 @@ class DES_Algorithm():
         string = str(bin(number).replace("0b", ""))
         return "0" * (4 - len(string)) + string
 
+    # Splits 48-bit data into 6-bit chunks to find row/column values in the S-Boxes.
     def subsitution(self, key, table):
         '''
         Here we are compressing the key from 32 bits to 48 bits. The boxes are
@@ -111,6 +112,7 @@ class DES_Algorithm():
 
         return "".join(res)
 
+    # Splits the key, shifts bits left, and generates 16 unique 48-bit subkeys.
     def keyGeneration(self):
         '''
         The input key is assumed to be character array.
@@ -150,6 +152,9 @@ class DES_Algorithm():
             self.roundKeys.append(self.permut(keyLeft + keyRight,
                                               tables.keyCompression56_48))
 
+    # 1. Initial Permutation
+    # 2. 16 Rounds: Expand -> XOR (Subkey) -> S-Box -> P-Box -> XOR (Left) -> Swap
+    # 3. Final Permutation
     def DES(self, viewSteps=False):
         '''
         The main algorithm is implemented here. The steps are:

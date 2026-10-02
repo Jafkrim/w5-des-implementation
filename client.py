@@ -2,14 +2,17 @@ import socket
 import threading
 import des
 
+# Runs in parallel so the terminal can receive messages and wait for keyboard input simultaneously.
 def receive_messages(sock, key):
     while True:
         try:
             encrypted_data = sock.recv(1024).decode('utf-8')
             if not encrypted_data:
                 break
+            # Prints raw data to prove it is encrypted before decryption happens.
             print(f"\n[Ciphertext In] {encrypted_data}")
 
+            # Passing 'False' tells DES to apply the 16 Subkeys in reverse order.
             cipher = des.DES_Algorithm(encrypted_data, key, False)
             decrypted = cipher.DES(viewSteps=False).strip(" ")
             
@@ -19,7 +22,8 @@ def receive_messages(sock, key):
 
 def main():
     print("=== TERMINAL SETUP ===")
-    
+
+    # Users agree on the key offline. It is typed locally and never sent over the socket.
     while True:
         shared_key = input("Enter 8-character Secret Key: ")
         if len(shared_key) == 8:
@@ -30,6 +34,7 @@ def main():
     port_input = input("Enter Port (press Enter for 8080): ")
     port = int(port_input) if port_input else 8080
 
+    # Actively reaches out across the network to connect to the Server's IP.
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         client.connect((target_ip, port))
@@ -47,6 +52,7 @@ def main():
         if not msg:
             continue
 
+        # Encrypts the typed plaintext using the local key before sending it to the socket.
         cipher = des.DES_Algorithm(msg, shared_key)
         encrypted_msg = cipher.DES(viewSteps=False)
         
